@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Surprise For You ✨</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #2e1065, #4c1d95, #6b21a8);
+      --card-bg: rgba(255, 255, 255, 0.12);
+      --card-border: rgba(216, 180, 254, 0.3);
+      --text-color: #f3e8ff;
+      --accent-color: #c084fc;
+      --button-bg: #9333ea;
+      --button-hover: #7e22ce;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .bg-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      color: rgba(192, 132, 252, 0.4);
+      font-size: 1.5rem;
+      animation: floatUp 6s infinite linear;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    .card-container {
+      position: relative;
+      z-index: 1;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 30px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    h1 {
+      color: #f3e8ff;
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(192, 132, 252, 0.4);
+    }
+
+    p {
+      color: #e9d5ff;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    /* OG Envelope Styling */
+    .envelope-wrapper {
+      position: relative;
+      width: 200px;
+      height: 130px;
+      margin: 30px auto;
+      background: #7e22ce;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      perspective: 1000px;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+      border-top: 70px solid #a855f7;
+      transform-origin: top;
+      transition: transform 0.4s ease;
+      z-index: 3;
+    }
+
+    .envelope-wrapper:hover .envelope-flap,
+    .envelope-wrapper.open .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    .profile-photo {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--accent-color);
+      margin: 15px auto;
+      display: block;
+      background-color: #f5f5dc;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Cake Base Styling */
+    .cake-wrapper {
+      position: relative;
+      margin: 30px auto;
+      width: 200px;
+      height: 140px;
+    }
+
+    .cake-body {
+      width: 200px;
+      height: 90px;
+      background: #3d2314;
+      border-radius: 12px 12px 8px 8px;
+      position: absolute;
+      bottom: 0;
+      box-shadow: inset 0 10px 0 #5c351e, inset 0 -10px 0 #24140b;
+      border: 2px solid #5c351e;
+    }
+
+    .frosting {
+      width: 200px;
+      height: 30px;
+      background: #f3e8ff;
+      border-radius: 12px 12px 5px 5px;
+      position: absolute;
+      top: 50px;
+    }
+
+    /* Candles */
+    .candles {
+      position: absolute;
+      top: 15px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      cursor: pointer;
+    }
+
+    .candle {
+      width: 12px;
+      height: 35px;
+      background: #c084fc;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .flame {
+      width: 12px;
+      height: 16px;
+      background: #ffb703;
+      border-radius: 50% 50% 20% 20%;
+      position: absolute;
+      top: -18px;
+      box-shadow: 0 0 12px #ffb703;
+      animation: flicker 0.6s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.2); }
+    }
+
+    .flame.out {
+      display: none;
+    }
+
+    /* OG Knife Drag & Cut Container */
+    .cut-container {
+      position: relative;
+      width: 200px;
+      height: 180px;
+      margin: 20px auto;
+      touch-action: none;
+    }
+
+    .knife-handle {
+      position: absolute;
+      top: -20px;
+      left: 80px;
+      font-size: 3rem;
+      cursor: grab;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .slice-line {
+      position: absolute;
+      top: 40px;
+      left: 98px;
+      width: 4px;
+      height: 0px;
+      background: #ffffff;
+      box-shadow: 0 0 10px #ffffff;
+      z-index: 5;
+    }
+
+    /* Canvas for Confetti */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* Grid Layout */
+    .love-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .love-item {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 600;
+      color: #f3e8ff;
+    }
+
+    /* Letter Tabs & Box Formats */
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--text-color);
+      box-shadow: none;
+    }
+
+    .tab-btn.active {
+      background: var(--button-bg);
+      color: white;
+    }
+
+    .letter-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+      height: 180px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #f3e8ff;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      box-sizing: border-box;
+    }
+
+    /* Scrollbar styling for letter box */
+    .letter-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    .letter-box::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+    .letter-box::-webkit-scrollbar-thumb {
+      background: var(--accent-color);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="bg-hearts">
+    <div class="heart" style="left: 10%; animation-delay: 0s;">💜</div>
+    <div class="heart" style="left: 25%; animation-delay: 2s;">✨</div>
+    <div class="heart" style="left: 40%; animation-delay: 1s;">💜</div>
+    <div class="heart" style="left: 60%; animation-delay: 3s;">✨</div>
+    <div class="heart" style="left: 75%; animation-delay: 0.5s;">💜</div>
+    <div class="heart" style="left: 90%; animation-delay: 2.5s;">✨</div>
+  </div>
+
+  <div class="card-container">
+
+    <!-- PAGE 1: Envelope -->
+    <div class="page active" id="page1">
+      <h1>I have a surprise for you..</h1>
+      <div class="envelope-wrapper" onclick="clickEnvelope()">
+        <div class="envelope-flap"></div>
+      </div>
+      <p>Press the letter above to open it</p>
+    </div>
+
+    <!-- PAGE 2: Happy Birthday & Custom Photo -->
+    <div class="page" id="page2">
+      <h1>Happy birthday!</h1>
+      <img src="custom.png" alt="Art" class="profile-photo" id="userPhoto">
+      <p>Ready to see what I made for you cookie??</p>
+      <button onclick="nextPage(3)">OMGG YESS</button>
+    </div>
+
+    <!-- PAGE 3: Blow Candles -->
+    <div class="page" id="page3">
+      <h1>Make a wish! 🕯️</h1>
+      <p>Tap the candles to blow them out!</p>
+      <div class="cake-wrapper" onclick="blowCandles()">
+        <div class="candles">
+          <div class="candle"><div class="flame"></div></div>
+          <div class="candle"><div class="flame"></div></div>
+          <div class="candle"><div class="flame"></div></div>
+        </div>
+        <div class="frosting"></div>
+        <div class="cake-body"></div>
+      </div>
+      <button id="afterBlowBtn" style="display:none;" onclick="nextPage(4)">Now let's cut it! 🔪</button>
+    </div>
+
+    <!-- PAGE 4: Cut Cake -->
+    <div class="page" id="page4">
+      <h1>Cut the Cake! 🍫</h1>
+      <p>I know you love chocolate cake 👀</p>
+      <p style="font-size: 0.85rem; opacity: 0.8;">Drag the knife down across the cake!</p>
+      <div class="cut-container" id="cutContainer">
+        <div class="knife-handle" id="knife">🔪</div>
+        <div class="slice-line" id="sliceLine"></div>
+        <div class="cake-wrapper" style="margin: 0; position: absolute; bottom: 0;">
+          <div class="frosting"></div>
+          <div class="cake-body"></div>
+        </div>
+      </div>
+      <button id="afterCutBtn" style="display:none;" onclick="nextPage(5)">Okay, what's next?</button>
+    </div>
+
+    <!-- PAGE 5: Things You Love -->
+    <div class="page" id="page5">
+      <h1>Things You Love 💜</h1>
+      <div class="love-grid">
+        <div class="love-item">🐱 Cats</div>
+        <div class="love-item">✍️ Writing</div>
+        <div class="love-item">💜 Purple</div>
+        <div class="love-item">🧴 Perfumes</div>
+        <div class="love-item">🧃 Boba Tea</div>
+        <div class="love-item">🐟 Ilish Mach</div>
+      </div>
+      <button onclick="nextPage(6)">Continue ✨</button>
+    </div>
+
+    <!-- PAGE 6: Letters -->
+    <div class="page" id="page6">
+      <h1>Letters made for you exclusively✨</h1>
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('delara', event)">Delara</button>
+        <button class="tab-btn" onclick="showTab('ellen', event)">Ellen</button>
+        <button class="tab-btn" onclick="showTab('shadow', event)">Shadow</button>
+      </div>
+
+      <div class="letter-box" id="letterContent">Select a tab to read the letter!</div>
+
+      <button id="finalNextBtn" style="display:none;" onclick="nextPage(7)">One last thing...</button>
+    </div>
+
+    <!-- PAGE 7: Final Message -->
+    <div class="page" id="page7">
+      <h1>Thank you for being you</h1>
+      <p>I know that things have been pretty rough for you but I believe in you and I know you'll be okay. I am very proud of you, I love you so much and I hope you liked my little gift.</p>
+      <p><strong>- Made by your lovely cupcake 🧁</strong></p>
+      <button onclick="restart()">Play Again 🔄</button>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
